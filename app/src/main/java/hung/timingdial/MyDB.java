@@ -11,10 +11,15 @@ import android.util.Log;
  * Created by Hung on 2016/4/4.
  */
 public class MyDB {
-    String[] Time={"08:00", "21:30", "02:00", "03:00", "04:00"};
-    String[] Name={"Omar", "Tobby", "Peter", "Linda", "Yasu"};
-    String[] PhoneNumber={"0929009230", "0960318960", "0952009230", "0939009230", "09827308"};
-    String[] TorF={"T", "T", "F", "F", "T"};
+    //String[] Time={"08:00"};
+    //String[] Name={"Omar"};
+    //String[] PhoneNumber={"0929009230"};
+    //String[] TorF={"T"};
+
+    String[] Time={"08:00", "21:30", "02:00"};
+    String[] Name={"Omar", "Tobby", "Peter"};
+    String[] PhoneNumber={"0929009230", "0960318960", "0952009230"};
+    String[] TorF={"F", "F", "F"};
     public SQLiteDatabase db = null;
     public static final String DATABASE_NAME = "TimingDial.db";
     public static final String TABLE_NAME = "timingdial";
@@ -32,13 +37,16 @@ public class MyDB {
             + SWITCH_COLUMN + " TEXT)";
 
     private Context mCtx = null;
+    public MyDB() {
 
+    }
     public MyDB(Context ctx) {
-            this.mCtx = ctx;
-        }
+        this.mCtx = ctx;
+    }
 
     public int getCount() {
-        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null).getCount();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        return c.getCount();
     }
     public String getItem(int position, int key) {
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
@@ -48,7 +56,7 @@ public class MyDB {
     public void open() throws SQLException {
         db = mCtx.openOrCreateDatabase(DATABASE_NAME, 0, null);
         try {
-            Log.e("TAG", "No DB");
+            //Log.e("TAG", "No DB"+Name.length);
             db.execSQL(CREATE_TABLE);
             for (int i=0;i<Name.length;i++) {
                 ContentValues args = new ContentValues();
@@ -59,7 +67,7 @@ public class MyDB {
                 db.insert(TABLE_NAME, null, args);
             }
         }catch (Exception e) {
-            Log.e("TAG", "Has DB"+e);
+            //Log.e("TAG", "Has DB"+e);
         }
     }
     public void close() {
@@ -73,12 +81,12 @@ public class MyDB {
         args.put(SWITCH_COLUMN, torf);
         return db.insert(TABLE_NAME, null, args);
     }
-    public boolean update(long rowId, String time, String name, String phone, String torf) {
+    public void update(long rowId, String time, String name, String phone, String torf) {
         ContentValues args = new ContentValues();
         args.put(NAME_COLUMN, name);
         args.put(PHONE_COLUMN, phone);
         args.put(TIME_COLUMN, time);
         args.put(SWITCH_COLUMN, torf);
-        return db.update(TABLE_NAME, args, KEY_ID + "=" + rowId, null) > 0;
+        db.update(TABLE_NAME, args, KEY_ID + "=" + rowId, null);
     }
 }

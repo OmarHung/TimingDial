@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:background="#5aceff">
+    </android.support.v7.widget.Toolbar>
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

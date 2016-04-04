@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/preferencecate_layout"
+        android:title="時間" >
+        <Preference
+            android:layout="@layout/preference_layout"
+            android:key="TIME"
+            android:title="08:00 AM" >
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/preferencecate_layout"
+        android:title="電話">
+        <Preference
+            android:layout="@layout/preference_layout"
+            android:key="PHONE"
+            android:title="打給誰"
+            android:summary="電話號碼" >
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>
