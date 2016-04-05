@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-23:12
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-24:12
 	package
 		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:3:5-30
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
@@ -13,8 +13,12 @@ ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-23:12
 	android:versionCode
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.CALL_PHONE
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:4:5-85
+	android:name
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:4:22-66
 application
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:5:5-21:19
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:5:5-22:19
 MERGED from [com.android.support:appcompat-v7:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.2.1\AndroidManifest.xml:25:5-20
 MERGED from [com.android.support:support-v4:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.2.1\AndroidManifest.xml:22:5-20
 MERGED from [com.android.support:animated-vector-drawable:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\23.2.1\AndroidManifest.xml:7:5-20
@@ -52,6 +56,10 @@ ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:18:9-20:72
 		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:20:13-60
 	android:name
 		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:19:13-44
+receiver#hung.timingdial.AlarmReceiver
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:21:9-60
+	android:name
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:21:19-48
 uses-sdk
 INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 MERGED from [com.android.support:appcompat-v7:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.2.1\AndroidManifest.xml:21:5-23:78

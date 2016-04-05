@@ -60,9 +60,9 @@ public class TimeListAdapter extends BaseAdapter {
         viewHolder.txtPhoneNumber.setText(myItems.get(position).get("phone").toString());
         mySwitchValue=false;
         if(myItems.get(position).get("switch").toString().equals("T")) mySwitchValue=true;
-        Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString()+" "+mySwitchValue+" "+viewHolder.mSwitch.isChecked());
+        //Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString()+" "+mySwitchValue+" "+viewHolder.mSwitch.isChecked());
         viewHolder.mSwitch.setChecked(mySwitchValue);
-        Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString() + " " + mySwitchValue + " " + viewHolder.mSwitch.isChecked());
+        //Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString() + " " + mySwitchValue + " " + viewHolder.mSwitch.isChecked());
         viewHolder.mSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +71,7 @@ public class TimeListAdapter extends BaseAdapter {
                 myDB = new MyDB(context);
                 myDB.open();
                 myDB.update(position+1, myItems.get(position).get("time").toString(), myItems.get(position).get("name").toString(), myItems.get(position).get("phone").toString(), nowSwitch);
-                Log.e("LOG", position + "  " + myItems.get(position).get("name").toString() + " " + viewHolder.mSwitch.isChecked());
+                //Log.e("LOG", position + "  " + myItems.get(position).get("name").toString() + " " + viewHolder.mSwitch.isChecked());
             }
         });
         return view;

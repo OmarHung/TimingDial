@@ -17,8 +17,8 @@ public class MyDB {
     //String[] TorF={"T"};
 
     String[] Time={"08:00", "21:30", "02:00"};
-    String[] Name={"Omar", "Tobby", "Peter"};
-    String[] PhoneNumber={"0929009230", "0960318960", "0952009230"};
+    String[] Name={"Omar", "戴立婷", "Peter"};
+    String[] PhoneNumber={"0929009230", "0930961318", "0952009230"};
     String[] TorF={"F", "F", "F"};
     public SQLiteDatabase db = null;
     public static final String DATABASE_NAME = "TimingDial.db";
@@ -44,6 +44,14 @@ public class MyDB {
         this.mCtx = ctx;
     }
 
+    public void getID() {
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        c.moveToFirst();
+        for(int i=0;i<c.getCount();i++) {
+            Log.e("_ID",c.getString(0));
+            c.moveToNext();
+        }
+    }
     public int getCount() {
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         return c.getCount();
@@ -81,6 +89,10 @@ public class MyDB {
         args.put(SWITCH_COLUMN, torf);
         return db.insert(TABLE_NAME, null, args);
     }
+    public boolean delete(long rowId) {
+        return db.delete(TABLE_NAME, KEY_ID + "=" + rowId, null) > 0;
+    }
+
     public void update(long rowId, String time, String name, String phone, String torf) {
         ContentValues args = new ContentValues();
         args.put(NAME_COLUMN, name);

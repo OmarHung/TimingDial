@@ -32,16 +32,16 @@
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_cab_background_top_material.xml"
     },
     {
+        "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\add.png",
+        "source": "D:\\Git\\TimingDial\\app\\src\\main\\res\\drawable\\add.png"
+    },
+    {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_ratingbar_small_material.xml",
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_ratingbar_small_material.xml"
     },
     {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_textfield_search_material.xml",
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_textfield_search_material.xml"
-    },
-    {
-        "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\add.png",
-        "source": "D:\\Git\\TimingDial\\app\\src\\main\\res\\drawable\\add.png"
     },
     {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_edit_text_material.xml",
@@ -84,12 +84,12 @@
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_btn_default_mtrl_shape.xml"
     },
     {
-        "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_cab_background_internal_bg.xml",
-        "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_cab_background_internal_bg.xml"
-    },
-    {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\my_edittext.xml",
         "source": "D:\\Git\\TimingDial\\app\\src\\main\\res\\drawable\\my_edittext.xml"
+    },
+    {
+        "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_cab_background_internal_bg.xml",
+        "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\drawable\\abc_cab_background_internal_bg.xml"
     },
     {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\abc_ratingbar_indicator_material.xml",
