@@ -2,18 +2,16 @@ package hung.timingdial;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,23 +21,25 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.jar.Manifest;
 
 public class NewDialActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private MyDB myDB = new MyDB(this);
     public String Hour="",Minute="",Time="",Name="",PhoneNum="";
     Preference TimePreference,PhonePreference;
-
+    public static final String TABLE_NAME = "timingdial";
+    public static final String KEY_ID = "_id";
+    public static final String NAME_COLUMN = "name";
+    public static final String PHONE_COLUMN = "phone";
+    public static final String TIME_COLUMN = "time";
+    public static final String SWITCH_COLUMN = "switch";
+    private MyDBHelper myDBHelper=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +50,7 @@ public class NewDialActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getFragmentManager().beginTransaction().replace(R.id.content_wrapper, new MyNewPreferenceFragment()).commit();
+        myDBHelper = new MyDBHelper(this);
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_new_dial, menu);
@@ -70,8 +71,7 @@ public class NewDialActivity extends AppCompatActivity {
                 Log.e("SetTime", Time);
                 Log.e("SetName", Name);
                 Log.e("SetPhoneNum", PhoneNum);
-                myDB.open();
-                myDB.append(Time, Name, PhoneNum, "T");
+                append(Time, Name, PhoneNum, "T");
                 long nextday=0;
                 android.text.format.Time t=new Time();
                 if(Integer.parseInt(Hour)<t.hour) {
@@ -217,5 +217,14 @@ public class NewDialActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+    public long append(String time, String name, String phone, String torf) { // 新增資料
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        ContentValues args = new ContentValues();
+        args.put(NAME_COLUMN, name);
+        args.put(PHONE_COLUMN, phone);
+        args.put(TIME_COLUMN, time);
+        args.put(SWITCH_COLUMN, torf);
+        return db.insert(TABLE_NAME, null, args);
     }
 }

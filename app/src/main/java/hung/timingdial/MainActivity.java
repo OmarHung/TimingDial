@@ -1,10 +1,12 @@
 package hung.timingdial;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -12,34 +14,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.Toast;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.jar.Manifest;
 
 public class MainActivity extends AppCompatActivity {
     private ListView TimeList;
-    private List<Map<String, String>> items;
-    private TimeListAdapter timeListAdapter;
-    private MyDB myDB=null;
+    public TimeCursorAdapter timeCursorAdapter;
+    private Cursor mCursor;
+    private MyDBHelper myDBHelper=null;
     private Toolbar toolbar;
     final public static int REQUEST_CODE_ASK_CALL_PHONE = 123;
+    public static final String TABLE_NAME = "timingdial";
+    public static final String KEY_ID = "_id";
+    public static final String NAME_COLUMN = "name";
+    public static final String PHONE_COLUMN = "phone";
+    public static final String TIME_COLUMN = "time";
+    public static final String SWITCH_COLUMN = "switch";
     String strInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,28 +54,21 @@ public class MainActivity extends AppCompatActivity {
         });
         toolbar.inflateMenu(R.menu.menu_main);
         setSupportActionBar(toolbar);
-
         TimeList = (ListView)findViewById(R.id.listView);
 
-        items = new ArrayList<Map<String,String>>();
-        myDB = new MyDB(this);
-        myDB.open();
-        for(int i=0;i<myDB.getCount();i++) {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("time", myDB.getItem(i,1));
-            map.put("name", myDB.getItem(i,2));
-            map.put("phone",myDB.getItem(i,3));
-            map.put("switch",myDB.getItem(i,4));
-            items.add(map);
-        }
-        timeListAdapter = new TimeListAdapter(this,items);
-        TimeList.setAdapter(timeListAdapter);
+        myDBHelper = new MyDBHelper(this);
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        timeCursorAdapter = new TimeCursorAdapter(this,mCursor,0);
+        //timeListAdapter = new TimeListAdapter(this,items);
+        TimeList.setAdapter(timeCursorAdapter);
 
         TimeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                strInput = items.get(position).get("phone").toString();
-                //Toast.makeText(getApplicationContext(), items.get(position).get("name").toString(), Toast.LENGTH_SHORT).show();
+                mCursor.moveToPosition(position);
+                strInput = mCursor.getString(2);
+                Toast.makeText(getApplicationContext(), strInput, Toast.LENGTH_SHORT).show();
             }
         });
         TimeList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -92,20 +79,13 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                myDB.delete(position+1);
-                                if(items.size()>0) {
-                                    items.clear();
-                                    for (int i = 0; i < myDB.getCount(); i++) {
-                                        Map<String, String> map = new HashMap<String, String>();
-                                        map.put("time", myDB.getItem(i, 1));
-                                        map.put("name", myDB.getItem(i, 2));
-                                        map.put("phone", myDB.getItem(i, 3));
-                                        map.put("switch", myDB.getItem(i, 4));
-                                        items.add(map);
-                                    }
-                                    timeListAdapter.notifyDataSetChanged();
-                                }
-                                myDB.getID();
+                                delete(id);
+                                SQLiteDatabase db = myDBHelper.getReadableDatabase();
+                                mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+                                timeCursorAdapter.changeCursor(mCursor);
+                                timeCursorAdapter.notifyDataSetChanged();
+                                TimeList.setAdapter(timeCursorAdapter);
+                                getID();
                             }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
@@ -118,20 +98,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    /*
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_CALL_PHONE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    Toast.makeText(this, "CALL_PHONE Denied", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }*/
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -139,19 +105,12 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         Log.e("onResume", "onResume");
-        if(items.size()>0) {
-            items.clear();
-            for (int i = 0; i < myDB.getCount(); i++) {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("time", myDB.getItem(i, 1));
-                map.put("name", myDB.getItem(i, 2));
-                map.put("phone", myDB.getItem(i, 3));
-                map.put("switch", myDB.getItem(i, 4));
-                items.add(map);
-            }
-            timeListAdapter.notifyDataSetChanged();
-        }
-        myDB.getID();
+        getID();
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        timeCursorAdapter.changeCursor(mCursor);
+        timeCursorAdapter.notifyDataSetChanged();
+        TimeList.setAdapter(timeCursorAdapter);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -161,5 +120,53 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // 關閉資料庫，一般的應用都不需要修改
+    public void close() {
+        myDBHelper.close();
+    }
+
+    public long append(String time, String name, String phone, String torf) { // 新增資料
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        ContentValues args = new ContentValues();
+        args.put(NAME_COLUMN, name);
+        args.put(PHONE_COLUMN, phone);
+        args.put(TIME_COLUMN, time);
+        args.put(SWITCH_COLUMN, torf);
+        return db.insert(TABLE_NAME, null, args);
+    }
+    public boolean delete(long rowId) {
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        return db.delete(TABLE_NAME, KEY_ID + "=" + rowId, null) > 0;
+    }
+    public void update(long rowId, String time, String name, String phone, String torf) {
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        ContentValues args = new ContentValues();
+        args.put(NAME_COLUMN, name);
+        args.put(PHONE_COLUMN, phone);
+        args.put(TIME_COLUMN, time);
+        args.put(SWITCH_COLUMN, torf);
+        db.update(TABLE_NAME, args, KEY_ID + "=" + rowId, null);
+    }
+    public void getID() {
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        c.moveToFirst();
+        for(int i=0;i<c.getCount();i++) {
+            Log.e("_ID", c.getString(0));
+            c.moveToNext();
+        }
+    }
+    public int getCount() {
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        return c.getCount();
+    }
+    public String getItem(int position, int key) {
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        c.moveToPosition(position);
+        return c.getString(key);
     }
 }
