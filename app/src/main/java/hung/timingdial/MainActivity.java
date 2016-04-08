@@ -1,12 +1,18 @@
 package hung.timingdial;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private Cursor mCursor;
     private MyDBHelper myDBHelper=null;
     private Toolbar toolbar;
+    private UpdateUIBroadcast updateUIBroadcast;
     final public static int REQUEST_CODE_ASK_CALL_PHONE = 123;
     public static final String TABLE_NAME = "timingdial";
     public static final String KEY_ID = "_id";
@@ -34,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PHONE_COLUMN = "phone";
     public static final String TIME_COLUMN = "time";
     public static final String SWITCH_COLUMN = "switch";
+    private String TAG="TAG";
     String strInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +75,25 @@ public class MainActivity extends AppCompatActivity {
         TimeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String strTime, strName, strPhoneNum, strSwitch;
+                long code_id;
+                SQLiteDatabase db = myDBHelper.getReadableDatabase();
+                mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
                 mCursor.moveToPosition(position);
-                strInput = mCursor.getString(2);
-                Toast.makeText(getApplicationContext(), strInput, Toast.LENGTH_SHORT).show();
+                code_id = mCursor.getLong(0);
+                strTime = mCursor.getString(1);
+                strName = mCursor.getString(2);
+                strPhoneNum = mCursor.getString(3);
+                strSwitch = mCursor.getString(4);
+                Intent intent = new Intent(MainActivity.this, SetDialActivity.class);
+                intent.putExtra("id",code_id);
+                intent.putExtra("time",strTime);
+                intent.putExtra("name",strName);
+                intent.putExtra("phone",strPhoneNum);
+                intent.putExtra("switch", strSwitch);
+                startActivity(intent);
+                Log.e(TAG, "OnItemCkick " + code_id + " " + strTime + " " + strName + " " + strPhoneNum + " " + strSwitch);
+                //Toast.makeText(getApplicationContext(), strTime+" "+strName+" "+strPhoneNum+" "+strSwitch, Toast.LENGTH_SHORT).show();
             }
         });
         TimeList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -85,7 +110,10 @@ public class MainActivity extends AppCompatActivity {
                                 timeCursorAdapter.changeCursor(mCursor);
                                 timeCursorAdapter.notifyDataSetChanged();
                                 TimeList.setAdapter(timeCursorAdapter);
-                                getID();
+                                Intent intent = new Intent(MainActivity.this, SetAlarmManager.class);
+                                intent.putExtra("id", id);
+                                intent.putExtra("mode", "cancel");
+                                startService(intent);
                             }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
@@ -94,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).show();
                 //Toast.makeText(getApplicationContext(), "Long Click "+items.get(position).get("name").toString(), Toast.LENGTH_SHORT).show();
-                return false;
+                return true;
             }
         });
     }
@@ -104,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
     }
     public void onResume() {
         super.onResume();
-        Log.e("onResume", "onResume");
-        getID();
+        Log.e(TAG, "onResume");
+        //getID();
         SQLiteDatabase db = myDBHelper.getReadableDatabase();
         mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         timeCursorAdapter.changeCursor(mCursor);
@@ -116,7 +144,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add) {
-           startActivity(new Intent(this,NewDialActivity.class));
+            Intent intent = new Intent(MainActivity.this, SetDialActivity.class);
+            intent.putExtra("id",-1);
+            intent.putExtra("time","");
+            intent.putExtra("name","");
+            intent.putExtra("phone","");
+            intent.putExtra("switch","");
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -168,5 +202,32 @@ public class MainActivity extends AppCompatActivity {
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         c.moveToPosition(position);
         return c.getString(key);
+    }
+    protected void onStart() {
+        updateUIBroadcast = new UpdateUIBroadcast();
+        IntentFilter filter1 = new IntentFilter();
+        filter1.addAction("UPDATE_UI_ACTION");
+        registerReceiver(updateUIBroadcast, filter1);
+        super.onStart();
+        Log.e(TAG, "onStart");
+    }
+    protected void onDestroy() {
+        stopService(new Intent(MainActivity.this, UpdateUIService.class));
+        unregisterReceiver(updateUIBroadcast);
+        super.onDestroy();
+    }
+
+    public class UpdateUIBroadcast extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SQLiteDatabase db = myDBHelper.getReadableDatabase();
+            mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+            timeCursorAdapter.changeCursor(mCursor);
+            timeCursorAdapter.notifyDataSetChanged();
+            TimeList.setAdapter(timeCursorAdapter);
+            stopService(new Intent(MainActivity.this, UpdateUIService.class));
+            //unregisterReceiver(updateUIBroadcast);
+            Log.e(TAG, "UpdateUIBroadcast");
+        }
     }
 }

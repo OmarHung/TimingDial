@@ -1,9 +1,14 @@
 package hung.timingdial;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Hung on 2016/4/7.
@@ -26,6 +34,7 @@ public class TimeCursorAdapter extends CursorAdapter {
     public static final String PHONE_COLUMN = "phone";
     public static final String TIME_COLUMN = "time";
     public static final String SWITCH_COLUMN = "switch";
+    private String TAG="TAG";
     public TimeCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.context=context;
@@ -62,18 +71,45 @@ public class TimeCursorAdapter extends CursorAdapter {
         final boolean TorF = viewHolder.mSwitch.isChecked();
         mySwitchValue=false;
         if(strSwitch.equals("T")) mySwitchValue=true;
-        //Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString()+" "+mySwitchValue+" "+viewHolder.mSwitch.isChecked());
         viewHolder.mSwitch.setChecked(mySwitchValue);
-        //Log.e("setChecked", position + "  " + myItems.get(position).get("name").toString() + " " + mySwitchValue + " " + viewHolder.mSwitch.isChecked());
         viewHolder.mSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Switch mSwitch = (Switch)v.findViewById(R.id.switch1);
+                Switch mSwitch = (Switch) v.findViewById(R.id.switch1);
                 boolean TorF = mSwitch.isChecked();
                 String nowSwitch = "F";
-                if (TorF) nowSwitch = "T";
+                if (TorF) {
+                    nowSwitch = "T";
+                    long nextday=0;
+                    String Hour=strTime.substring(0, 2), Minute = strTime.substring(3);
+                    GregorianCalendar g = new GregorianCalendar();
+                    int SystemHour=g.get(GregorianCalendar.HOUR_OF_DAY), SystemMinute=g.get(GregorianCalendar.MINUTE);
+                    if(Integer.parseInt(Hour)<SystemHour) {
+                        nextday=1000*60*60*24;
+                    }
+                    else if(Integer.parseInt(Hour)==SystemHour && Integer.parseInt(Minute)<=SystemMinute) {
+                        nextday=1000*60*60*24;
+                    }
+                    else nextday=0;
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(System.currentTimeMillis());
+                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Hour));
+                    cal.set(Calendar.MINUTE, Integer.parseInt(Minute));
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    Intent intent = new Intent(context, SetAlarmManager.class);
+                    intent.putExtra("time", cal.getTimeInMillis() + nextday);
+                    intent.putExtra("id", (int)id);
+                    intent.putExtra("mode", "set");
+                    context.startService(intent);
+                } else {
+                    Intent intent = new Intent(context, SetAlarmManager.class);
+                    intent.putExtra("id", (int)id);
+                    intent.putExtra("mode", "cancel");
+                    context.startService(intent);
+                }
                 update(id, strTime, strName, strPhoneNum, nowSwitch);
-                Log.e("LOG", id + "  " + strTime + " " + strName+" "+nowSwitch);
+                Log.e(TAG, "OnSwitchCkick " + id + " " + strTime + " " + strName + " " + strPhoneNum + " " + nowSwitch);
             }
         });
     }

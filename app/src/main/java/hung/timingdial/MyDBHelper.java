@@ -31,7 +31,6 @@ public class MyDBHelper extends SQLiteOpenHelper{
             + PHONE_COLUMN + " TEXT,"
             + SWITCH_COLUMN + " TEXT)";
     //public static SQLiteDatabase db;
-    //public DBItems dbItems = new DBItems();
     public MyDBHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }

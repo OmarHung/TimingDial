@@ -24,10 +24,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="hung.timingdial.NewDialActivity"
+            android:name="hung.timingdial.SetDialActivity"
             android:label="@string/title_activity_new_dial" />
 
         <receiver android:name="hung.timingdial.AlarmReceiver" />
+
+        <service android:name="hung.timingdial.UpdateUIService" />
+        <service android:name="hung.timingdial.SetAlarmManager" />
     </application>
 
 </manifest>
