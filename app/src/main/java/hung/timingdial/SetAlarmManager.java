@@ -44,9 +44,9 @@ public class SetAlarmManager extends Service {
         Time = intent.getLongExtra("time", 0);
         ID = intent.getIntExtra("id", -1);
         Mode = intent.getStringExtra("mode");
-        Log.e("TAG","SetAlarmManager "+ID+" "+Time+" "+Mode);
         Intent mIntent = new Intent(SetAlarmManager.this,AlarmReceiver.class);
-        mIntent.putExtra("Long_id",(long)ID);
+        mIntent.putExtra("Long_id"+ID,(long)ID);
+        Log.e("onStartCommand", "onStartCommand" + " " + ID);
         PendingIntent pi = PendingIntent.getBroadcast(SetAlarmManager.this, ID, mIntent, 0);
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if(Mode.equals("set")) {

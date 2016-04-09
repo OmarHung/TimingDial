@@ -1,5 +1,6 @@
 package hung.timingdial;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private UpdateUIBroadcast updateUIBroadcast;
     final public static int REQUEST_CODE_ASK_CALL_PHONE = 123;
+    final public static int REQUEST_CODE_ASK_READ_CONTACTS = 124;
     public static final String TABLE_NAME = "timingdial";
     public static final String KEY_ID = "_id";
     public static final String NAME_COLUMN = "name";
@@ -48,12 +50,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= 23) {
-            int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this,android.Manifest.permission.CALL_PHONE);
-            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(MainActivity.this,new String[]{android.Manifest.permission.CALL_PHONE},REQUEST_CODE_ASK_CALL_PHONE);
-            }
-        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -64,7 +60,18 @@ public class MainActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_main);
         setSupportActionBar(toolbar);
         TimeList = (ListView)findViewById(R.id.listView);
-
+        if (Build.VERSION.SDK_INT >= 23) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(MainActivity.this,android.Manifest.permission.CALL_PHONE);
+            int checkPhoneBookPermission = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS);
+            if(checkCallPhonePermission != PackageManager.PERMISSION_GRANTED ){
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{android.Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS},REQUEST_CODE_ASK_CALL_PHONE);
+            }
+            /*
+            int checkPhoneBookPermission = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS);
+            if(checkPhoneBookPermission != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_CONTACTS},REQUEST_CODE_ASK_READ_CONTACTS);
+            }*/
+        }
         myDBHelper = new MyDBHelper(this);
         SQLiteDatabase db = myDBHelper.getReadableDatabase();
         mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
@@ -92,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("phone",strPhoneNum);
                 intent.putExtra("switch", strSwitch);
                 startActivity(intent);
-                Log.e(TAG, "OnItemCkick " + code_id + " " + strTime + " " + strName + " " + strPhoneNum + " " + strSwitch);
-                //Toast.makeText(getApplicationContext(), strTime+" "+strName+" "+strPhoneNum+" "+strSwitch, Toast.LENGTH_SHORT).show();
             }
         });
         TimeList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -126,14 +131,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_CALL_PHONE:
+                if (grantResults.length>0&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }else {
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{android.Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS},REQUEST_CODE_ASK_CALL_PHONE);
+                }
+                return;
+        }
+    }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume");
-        //getID();
         SQLiteDatabase db = myDBHelper.getReadableDatabase();
         mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         timeCursorAdapter.changeCursor(mCursor);
@@ -188,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
         Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         c.moveToFirst();
         for(int i=0;i<c.getCount();i++) {
-            Log.e("_ID", c.getString(0));
             c.moveToNext();
         }
     }
@@ -209,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
         filter1.addAction("UPDATE_UI_ACTION");
         registerReceiver(updateUIBroadcast, filter1);
         super.onStart();
-        Log.e(TAG, "onStart");
     }
     protected void onDestroy() {
         stopService(new Intent(MainActivity.this, UpdateUIService.class));
@@ -226,8 +238,6 @@ public class MainActivity extends AppCompatActivity {
             timeCursorAdapter.notifyDataSetChanged();
             TimeList.setAdapter(timeCursorAdapter);
             stopService(new Intent(MainActivity.this, UpdateUIService.class));
-            //unregisterReceiver(updateUIBroadcast);
-            Log.e(TAG, "UpdateUIBroadcast");
         }
     }
 }

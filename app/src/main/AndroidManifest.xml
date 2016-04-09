@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hung.timingdial">
-    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,10 +19,15 @@
         </activity>
         <activity
             android:name=".SetDialActivity"
-            android:label="@string/title_activity_new_dial"></activity>
-        <receiver android:name=".AlarmReceiver"></receiver>
-        <service android:name=".UpdateUIService"></service>
-        <service android:name=".SetAlarmManager"></service>
+            android:label="@string/title_activity_new_dial" />
+
+        <receiver android:name=".AlarmReceiver" />
+
+        <service android:name=".UpdateUIService" />
+        <service android:name=".SetAlarmManager" />
+
+        <activity android:name=".PhoneBookActivity">
+        </activity>
     </application>
 
 </manifest>

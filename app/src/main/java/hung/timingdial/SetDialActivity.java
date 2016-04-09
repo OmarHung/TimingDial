@@ -1,5 +1,7 @@
 package hung.timingdial;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -8,12 +10,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -43,7 +48,7 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
     public static final String TIME_COLUMN = "time";
     public static final String SWITCH_COLUMN = "switch";
     private MyDBHelper myDBHelper=null;
-    private String TAG = "TAG";
+    final public static int REQUEST_CODE_ASK_READ_CONTACTS = 124;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +69,6 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
         Time=strTime;
         PhoneNum=strPhoneNum;
         Name=strName;
-        Log.e(TAG, "OnCreate_SetDialActivity " + code_id + " " + strTime + " " + strName + " " + strPhoneNum + " " + strSwitch);
     }
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_new_dial, menu);
@@ -77,60 +81,73 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
             if(PhoneNum.equals("")) {
                 Toast.makeText(this, "請設定電話號碼", Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(this, "新增預約撥號", Toast.LENGTH_SHORT).show();
                 if (Time.equals(""))
                     Time = TimePreference.getTitle().toString();
                 if (Name.equals(""))
                     Name = "未設定聯絡人";
-                long nextday=0;
-                GregorianCalendar g = new GregorianCalendar();
-                int SystemHour=g.get(GregorianCalendar.HOUR_OF_DAY), SystemMinute=g.get(GregorianCalendar.MINUTE);
-                Log.e(TAG,"System_Time "+SystemHour+" "+SystemMinute);
-                if(Integer.parseInt(Hour)<SystemHour) {
-                    nextday=1000*60*60*24;
-                }
-                else if(Integer.parseInt(Hour)==SystemHour && Integer.parseInt(Minute)<=SystemMinute) {
-                    nextday=1000*60*60*24;
-                }
-                else nextday=0;
-                if(strSwitch.equals("") || strSwitch.equals("T")) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(System.currentTimeMillis());
-                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Hour));
-                    cal.set(Calendar.MINUTE, Integer.parseInt(Minute));
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    if(code_id==-1) {
-                        Log.e("ID=-1","ID=-1");
-                        SQLiteDatabase db = myDBHelper.getReadableDatabase();
-                        Cursor mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-                        mCursor.moveToLast();
-                        if(mCursor.getCount()>0)
-                            code_id=mCursor.getLong(0)+1;
-                        else code_id=1;
+                if(HaveExistingTime(Time,code_id)) {
+                    Toast.makeText(this, "預約撥號時間已存在，請重新設定", Toast.LENGTH_SHORT).show();
+                }else {
+                    long nextday = 0;
+                    GregorianCalendar g = new GregorianCalendar();
+                    int SystemHour = g.get(GregorianCalendar.HOUR_OF_DAY), SystemMinute = g.get(GregorianCalendar.MINUTE);
+                    if (Integer.parseInt(Hour) < SystemHour) {
+                        nextday = 1000 * 60 * 60 * 24;
+                    } else if (Integer.parseInt(Hour) == SystemHour && Integer.parseInt(Minute) <= SystemMinute) {
+                        nextday = 1000 * 60 * 60 * 24;
+                    } else nextday = 0;
+                    if (strSwitch.equals("") || strSwitch.equals("T")) {
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(System.currentTimeMillis());
+                        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Hour));
+                        cal.set(Calendar.MINUTE, Integer.parseInt(Minute));
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        if (code_id == -1) {
+                            SQLiteDatabase db = myDBHelper.getReadableDatabase();
+                            Cursor mCursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+                            mCursor.moveToLast();
+                            if (mCursor.getCount() > 0)
+                                code_id = mCursor.getLong(0) + 1;
+                            else code_id = 1;
+                        }
+                        long saveTime = cal.getTimeInMillis() + nextday;
+                        Intent intent = new Intent(SetDialActivity.this, SetAlarmManager.class);
+                        intent.putExtra("time", saveTime);
+                        intent.putExtra("id", (int) code_id);
+                        intent.putExtra("mode", "set");
+                        startService(intent);
+                        if (strSwitch.equals("")) {
+                            append(Time, Name, PhoneNum, "T");
+                        } else if (strSwitch.equals("T")) {
+                            update(code_id, Time, Name, PhoneNum, "T");
+                        }
+                    } else if (strSwitch.equals("F")) {
+                        update(code_id, Time, Name, PhoneNum, "F");
                     }
-                    long saveTime=cal.getTimeInMillis()+nextday;
-                    Intent intent = new Intent(SetDialActivity.this, SetAlarmManager.class);
-                    intent.putExtra("time",saveTime);
-                    intent.putExtra("id", (int)code_id);
-                    intent.putExtra("mode", "set");
-                    startService(intent);
-                    Log.e(TAG, "Intent_SetDialActivity " + code_id + " " + Time + " " + Name + " " + PhoneNum + " " + strSwitch+" "+saveTime);
-                    if (strSwitch.equals("")) {
-                        append(Time, Name, PhoneNum, "T");
-                    }
-                    else if (strSwitch.equals("T")) {
-                        update(code_id, Time, Name, PhoneNum, "T");
-                    }
-                }else if(strSwitch.equals("F")) {
-                    update(code_id, Time, Name, PhoneNum, "F");
+                    finish();
+                    return true;
                 }
-                Log.e(TAG, "Done_SetDialActivity " + code_id + " " + Time + " " + Name + " " + PhoneNum + " " + strSwitch);
-                finish();
-                return true;
             }
         }else finish();
         return super.onOptionsItemSelected(item);
+    }
+    public  boolean HaveExistingTime(String time, long id) {
+        Cursor mCursor;
+        MyDBHelper myDBHelper = new MyDBHelper(SetDialActivity.this);
+        SQLiteDatabase db = myDBHelper.getReadableDatabase();
+        mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        mCursor.moveToFirst();
+        for(int i=0; i<mCursor.getCount(); i++) {
+            String strTime = mCursor.getString(1);
+            long lognId = mCursor.getLong(0);
+            if(strTime.equals(time)) {
+                if(lognId==id) continue;
+                return true;
+            }
+            mCursor.moveToNext();
+        }
+        return false;
     }
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -141,8 +158,19 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
         Time = Myhour + ":" + Myminute;
         Hour = Myhour;
         Minute = Myminute;
-
-        Log.e("SetTime", Time);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("onResult", Name + " " + PhoneNum);
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.e("onResult", Name + " " + PhoneNum);
+        if (requestCode == 1 && resultCode == RESULT_FIRST_USER) {
+            Bundle bundle = data.getExtras();
+            Name=bundle.getString("name");
+            PhoneNum=bundle.getString("phonenumber");
+            PhonePreference.setTitle(Name);
+            PhonePreference.setSummary(PhoneNum);
+            Log.e("onResult",Name+" "+PhoneNum);
+        }
     }
     class MyNewPreferenceFragment extends PreferenceFragment {
         public String mName="",mPhoneNum="";
@@ -196,7 +224,14 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
                                         case 0:
-
+                                            int checkPhoneBookPermission = ContextCompat.checkSelfPermission(SetDialActivity.this, Manifest.permission.READ_CONTACTS);
+                                            if (checkPhoneBookPermission != PackageManager.PERMISSION_GRANTED) {
+                                                ActivityCompat.requestPermissions(SetDialActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_ASK_READ_CONTACTS);
+                                            } else {
+                                                Intent intent = new Intent();
+                                                intent.setClass(SetDialActivity.this, PhoneBookActivity.class);
+                                                getActivity().startActivityForResult(intent, 1);
+                                            }
                                             break;
                                         case 1:
                                             LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -269,6 +304,20 @@ public class SetDialActivity extends AppCompatActivity implements TimePickerDial
                     return false;
                 }
             });
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_READ_CONTACTS:
+                if (grantResults.length>0&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent();
+                    intent.setClass(SetDialActivity.this, PhoneBookActivity.class);
+                    SetDialActivity.this.startActivityForResult(intent, 1);
+                }else {
+                    ActivityCompat.requestPermissions(SetDialActivity.this,new String[]{Manifest.permission.READ_CONTACTS},REQUEST_CODE_ASK_READ_CONTACTS);
+                }
+                return;
         }
     }
     public long append(String time, String name, String phone, String torf) { // 新增資料

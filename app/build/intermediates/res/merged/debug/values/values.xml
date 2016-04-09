@@ -213,9 +213,9 @@
     <string name="abc_shareactionprovider_share_with">Share with</string>
     <string name="abc_shareactionprovider_share_with_application">Share with %s</string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
-    <string name="app_name">TimingDial</string>
+    <string name="app_name">預約撥號</string>
     <string name="status_bar_notification_info_overflow">999+</string>
-    <string name="title_activity_new_dial">NewDialActivity</string>
+    <string name="title_activity_new_dial">新增預約撥號</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>

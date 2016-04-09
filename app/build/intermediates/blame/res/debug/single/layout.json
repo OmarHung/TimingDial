@@ -84,6 +84,10 @@
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\layout\\abc_action_bar_title_item.xml"
     },
     {
+        "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\layout\\activity_phone_book.xml",
+        "source": "D:\\Git\\TimingDial\\app\\src\\main\\res\\layout\\activity_phone_book.xml"
+    },
+    {
         "merged": "D:\\Git\\TimingDial\\app\\build\\intermediates\\res\\merged\\debug\\layout\\notification_template_part_chronometer.xml",
         "source": "D:\\Git\\TimingDial\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.2.1\\res\\layout\\notification_template_part_chronometer.xml"
     },

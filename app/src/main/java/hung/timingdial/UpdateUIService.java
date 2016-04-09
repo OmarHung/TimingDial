@@ -17,7 +17,6 @@ public class UpdateUIService extends Service {
         Intent updateUIIntent = new Intent();
         updateUIIntent.setAction("UPDATE_UI_ACTION");
         sendBroadcast(updateUIIntent);
-        Log.e("UpdateUIService", "UpdateUIService");
     }
     @Override
     public IBinder onBind(Intent intent) {

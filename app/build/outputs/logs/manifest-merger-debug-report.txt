@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-26:12
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-33:12
 	package
 		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:3:5-30
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
@@ -14,11 +14,15 @@ ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:2:1-26:12
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
 		INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml
 uses-permission#android.permission.CALL_PHONE
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:4:5-85
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:5:5-69
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:4:22-66
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:5:22-66
+uses-permission#android.permission.READ_CONTACTS
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:6:5-88
+	android:name
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:6:22-69
 application
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:5:5-24:19
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:7:5-31:19
 MERGED from [com.android.support:appcompat-v7:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.2.1\AndroidManifest.xml:25:5-20
 MERGED from [com.android.support:support-v4:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.2.1\AndroidManifest.xml:22:5-20
 MERGED from [com.android.support:animated-vector-drawable:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\23.2.1\AndroidManifest.xml:7:5-20
@@ -27,47 +31,51 @@ MERGED from [com.android.support:support-v4:23.2.1] D:\Git\TimingDial\app\build\
 MERGED from [com.android.support:support-vector-drawable:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\23.2.1\AndroidManifest.xml:7:5-20
 MERGED from [com.android.support:support-v4:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.2.1\AndroidManifest.xml:22:5-20
 	android:label
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:8:9-41
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:10:9-41
 	android:supportsRtl
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:9:9-35
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:11:9-35
 	android:allowBackup
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:6:9-35
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:8:9-35
 	android:icon
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:7:9-43
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:9:9-43
 	android:theme
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:10:9-40
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:12:9-40
 activity#hung.timingdial.MainActivity
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:11:9-17:20
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:13:9-19:20
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:11:19-47
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:13:19-47
 intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:12:13-16:29
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:14:13-18:29
 action#android.intent.action.MAIN
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:13:17-69
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:15:17-69
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:13:25-66
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:15:25-66
 category#android.intent.category.LAUNCHER
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:15:17-77
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:17:17-77
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:15:27-74
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:17:27-74
 activity#hung.timingdial.SetDialActivity
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:18:9-20:72
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:20:9-22:63
 	android:label
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:20:13-60
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:22:13-60
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:19:13-44
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:21:13-44
 receiver#hung.timingdial.AlarmReceiver
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:21:9-60
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:24:9-51
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:21:19-48
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:24:19-48
 service#hung.timingdial.UpdateUIService
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:22:9-60
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:26:9-52
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:22:18-49
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:26:18-49
 service#hung.timingdial.SetAlarmManager
-ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:23:9-60
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:27:9-52
 	android:name
-		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:23:18-49
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:27:18-49
+activity#hung.timingdial.PhoneBookActivity
+ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:29:9-30:20
+	android:name
+		ADDED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml:29:19-52
 uses-sdk
 INJECTED from D:\Git\TimingDial\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 MERGED from [com.android.support:appcompat-v7:23.2.1] D:\Git\TimingDial\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.2.1\AndroidManifest.xml:21:5-23:78

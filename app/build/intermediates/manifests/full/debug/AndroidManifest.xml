@@ -9,6 +9,7 @@
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +32,9 @@
 
         <service android:name="hung.timingdial.UpdateUIService" />
         <service android:name="hung.timingdial.SetAlarmManager" />
+
+        <activity android:name="hung.timingdial.PhoneBookActivity" >
+        </activity>
     </application>
 
 </manifest>

@@ -30,32 +30,37 @@ public class AlarmReceiver extends BroadcastReceiver {
     private String TAG="TAG";
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.e("onReceive", "onReceive");
         myDBHelper = new MyDBHelper(context);
         SQLiteDatabase db = myDBHelper.getReadableDatabase();
         mCursor=db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-        long ID=intent.getLongExtra("Long_id",-1);
-        String strID=String.valueOf(ID);
-        Log.e(TAG, "onReceive " + strID);
-        mCursor.moveToPosition((int) ID - 1);
-        Log.e(TAG, "onReceive " + strID);
-        String strTime=mCursor.getString(1);
-        Log.e(TAG, "onReceive " + strID + " " + strTime);
-        String strName=mCursor.getString(2);
-        Log.e(TAG, "onReceive " + strID + " " + strTime + " " + strName);
-        String strPhone=mCursor.getString(3);
-        Log.e(TAG, "onReceive " + strID + " " + strTime + " " + strName + " " + strPhone);
-        update(Long.parseLong(strID), strTime, strName, strPhone, "F");
-        context.stopService(new Intent(context, SetAlarmManager.class));
-        try {
-            Intent updateUIIntent = new Intent(context, UpdateUIService.class);
-            context.startService(updateUIIntent);
-        }catch (Exception e) {
-            Log.e(TAG, "onReceive " + e);
+        mCursor.moveToFirst();
+        long ID=-1, lastID=mCursor.getLong(0);
+        Log.e("onReceive", "onReceive"+" "+ID+" "+lastID);
+        for(int i=0; i<mCursor.getCount(); i++) {
+            ID=intent.getLongExtra("Long_id"+mCursor.getLong(0),-1);
+            if(ID!=-1) {
+                Log.e("onReceive", "onReceive"+" "+ID+" "+lastID);
+                String strID = String.valueOf(ID);
+                String strTime = mCursor.getString(1);
+                String strName = mCursor.getString(2);
+                String strPhone = mCursor.getString(3);
+                update(Long.parseLong(strID), strTime, strName, strPhone, "F");
+                context.stopService(new Intent(context, SetAlarmManager.class));
+                Log.e("stopService", "stopService" + " " + strPhone);
+                try {
+                    Intent updateUIIntent = new Intent(context, UpdateUIService.class);
+                    context.startService(updateUIIntent);
+                    Log.e("startService", "startService"+" "+strPhone);
+                    callDirectly(context, strPhone);
+                } catch (Exception e) {
+                }
+            }
+            mCursor.moveToNext();
         }
-
-        //callDirectly(context, strInput);
     }
     private void callDirectly(Context context, String phoneNum) {
+        Log.e("Call","Call");
         Intent intent =new Intent(CALL, Uri.parse("tel:" + phoneNum));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

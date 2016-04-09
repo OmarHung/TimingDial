@@ -42,7 +42,6 @@ public class TimeCursorAdapter extends CursorAdapter {
     }
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        //inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = mInflater.inflate(R.layout.listview_layout, null);
         ViewHolder viewHolder = new ViewHolder();
         viewHolder.txtName = (TextView)view.findViewById(R.id.txt_name);
@@ -109,7 +108,6 @@ public class TimeCursorAdapter extends CursorAdapter {
                     context.startService(intent);
                 }
                 update(id, strTime, strName, strPhoneNum, nowSwitch);
-                Log.e(TAG, "OnSwitchCkick " + id + " " + strTime + " " + strName + " " + strPhoneNum + " " + nowSwitch);
             }
         });
     }
